@@ -16,4 +16,4 @@ class Sell extends Model {
   }
 }
 
-module.exports = Client;
+module.exports = Sell;
