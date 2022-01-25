@@ -6,11 +6,24 @@ const asyncWrapper = require("../middleware/async");
 const getAllClients = async (req, res) => {
   const clients = await Client.findAll();
 
+  if (clients.length === 0) {
+    return res.status(404).json({ sucess: false, error: "No clients found" });
+  }
   return res.json(clients);
 };
 
 // GET ONE Client
-const getClient = asyncWrapper(async (req, res) => {});
+const getClient = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+
+  const client = await Client.findByPk(id);
+
+  if (!client) {
+    res.status(404).json({ sucess: false, error: "Client not found" });
+  }
+
+  res.status(200).json(client);
+});
 
 // CREATE Client
 const createClient = async (req, res) => {
