@@ -70,7 +70,20 @@ const deleteProduct = asyncWrapper(async (req, res) => {
 });
 
 // UPDATE PRODUCT
-const updateProduct = asyncWrapper(async (req, res) => {});
+const updateProduct = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const { price, type, brand, size, description, color } = req.body;
+
+  await Product.update(
+    { price, type, brand, size, description, color },
+    { where: { id } }
+  ).then((result) => {
+    if (!result[0]) {
+      res.status(400).json({ sucess: false, error: "Product not found" });
+    }
+    res.status(200).json({ sucess: true });
+  });
+});
 
 module.exports = {
   getAllProducts,
