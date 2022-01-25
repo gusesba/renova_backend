@@ -14,7 +14,7 @@ class Client extends Model {
     );
   }
   static associate(models) {
-    this.hasMany(models.product, { foreignKey: "providerId", as: "products" });
+    this.hasMany(models.product, { foreignKey: "providerId", as: "product" });
   }
 }
 

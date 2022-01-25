@@ -19,7 +19,7 @@ const getProduct = asyncWrapper(async (req, res) => {
   const product = await Product.findByPk(id);
 
   if (!product) {
-    return res.status(400).json({ error: "User not found" });
+    return res.status(400).json({ error: "Product not found" });
   }
 
   return res.json(product);

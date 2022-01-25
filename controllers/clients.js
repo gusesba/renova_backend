@@ -16,13 +16,29 @@ const getClient = asyncWrapper(async (req, res) => {});
 const createClient = async (req, res) => {
   const { name, phone } = req.body;
 
-  const client = await Client.create({ name, phone });
+  const client = await Client.create({ name, phone }).catch((err) =>
+    console.log(err)
+  );
 
   return res.json(client);
 };
 
 // DELETE Client
-const deleteClient = asyncWrapper(async (req, res) => {});
+const deleteClient = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+
+  Client.destroy({
+    where: { id },
+  }).then((count) => {
+    if (!count) {
+      return res.status(404).json({
+        sucess: false,
+        error: "No client",
+      });
+    }
+    res.status(204).send();
+  });
+});
 
 // UPDATE Client
 const updateClient = asyncWrapper(async (req, res) => {});
