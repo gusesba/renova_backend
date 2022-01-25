@@ -27,7 +27,7 @@ const createClient = async (req, res) => {
 const deleteClient = asyncWrapper(async (req, res) => {
   const { id } = req.params;
 
-  Client.destroy({
+  await Client.destroy({
     where: { id },
   }).then((count) => {
     if (!count) {
@@ -36,12 +36,23 @@ const deleteClient = asyncWrapper(async (req, res) => {
         error: "No client",
       });
     }
-    res.status(204).send();
+    res.status(200).json({ sucess: true });
   });
 });
 
 // UPDATE Client
-const updateClient = asyncWrapper(async (req, res) => {});
+const updateClient = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+  const { phone, name } = req.body;
+
+  await Client.update({ phone, name }, { where: { id } }).then((result) => {
+    if (!result[0]) {
+      console.log("teste");
+      res.status(404).json({ sucess: false, error: "Client not found" });
+    }
+    res.status(200).json({ sucess: true });
+  });
+});
 
 module.exports = {
   getAllClients,
