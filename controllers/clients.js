@@ -7,7 +7,7 @@ const getAllClients = async (req, res) => {
   const clients = await Client.findAll();
 
   if (clients.length === 0) {
-    return res.status(404).json({ sucess: false, error: "No clients found" });
+    return res.status(400).json({ sucess: false, error: "No clients found" });
   }
   return res.json(clients);
 };
@@ -19,7 +19,7 @@ const getClient = asyncWrapper(async (req, res) => {
   const client = await Client.findByPk(id);
 
   if (!client) {
-    res.status(404).json({ sucess: false, error: "Client not found" });
+    res.status(400).json({ sucess: false, error: "Client not found" });
   }
 
   res.status(200).json(client);
@@ -44,9 +44,9 @@ const deleteClient = asyncWrapper(async (req, res) => {
     where: { id },
   }).then((count) => {
     if (!count) {
-      return res.status(404).json({
+      return res.status(400).json({
         sucess: false,
-        error: "No client",
+        error: "Client not found",
       });
     }
     res.status(200).json({ sucess: true });
@@ -60,8 +60,7 @@ const updateClient = asyncWrapper(async (req, res) => {
 
   await Client.update({ phone, name }, { where: { id } }).then((result) => {
     if (!result[0]) {
-      console.log("teste");
-      res.status(404).json({ sucess: false, error: "Client not found" });
+      res.status(400).json({ sucess: false, error: "Client not found" });
     }
     res.status(200).json({ sucess: true });
   });

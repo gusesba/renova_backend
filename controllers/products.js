@@ -10,7 +10,7 @@ const getAllProducts = asyncWrapper(async (req, res) => {
   });
 
   if (products.length === 0) {
-    return res.status(404).json({ sucess: false, error: "No Products Found" });
+    return res.status(400).json({ sucess: false, error: "No Products Found" });
   }
 
   return res.status(200).json(products);
@@ -23,7 +23,7 @@ const getProduct = asyncWrapper(async (req, res) => {
   const product = await Product.findByPk(id);
 
   if (!product) {
-    return res.status(400).json({ error: "Product not found" });
+    return res.status(400).json({ sucess: false, error: "Product not found" });
   }
 
   return res.json(product);
@@ -53,7 +53,21 @@ const createProduct = async (req, res) => {
 };
 
 // DELETE PRODUCT
-const deleteProduct = asyncWrapper(async (req, res) => {});
+const deleteProduct = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+
+  await Product.destroy({
+    where: { id },
+  }).then((count) => {
+    if (!count) {
+      return res.status(400).json({
+        sucess: false,
+        error: "Product not found",
+      });
+    }
+    res.status(200).json({ sucess: true });
+  });
+});
 
 // UPDATE PRODUCT
 const updateProduct = asyncWrapper(async (req, res) => {});
