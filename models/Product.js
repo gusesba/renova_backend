@@ -21,7 +21,7 @@ class Product extends Model {
 
   static associate(models) {
     this.belongsTo(models.client, { foreignKey: "providerId", as: "provider" });
-    this.hasOne(models.sell, { foreignKey: "productId", as: "product" });
+    this.hasOne(models.sell, { foreignKey: "productId", as: "sell" });
   }
 }
 

@@ -2,6 +2,7 @@ const Product = require("../models/Product");
 const Client = require("../models/Client");
 
 const asyncWrapper = require("../middleware/async");
+const { Model } = require("sequelize/dist");
 
 // GET ALL PRODUCTS
 const getAllProducts = asyncWrapper(async (req, res) => {
