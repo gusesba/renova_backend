@@ -1,7 +1,8 @@
 const Sell = require("../models/Sell");
 const Product = require("../models/Product");
 const Client = require("../models/Client");
-const { Op } = require("sequelize");
+const sequelize = require("sequelize");
+const moment = require("moment");
 
 const asyncWrapper = require("../middleware/async");
 
@@ -74,12 +75,35 @@ const countProductByPeriod = asyncWrapper(async (req, res) => {
     col: "productId",
     where: {
       createdAt: {
-        [Op.between]: [dateInit, dateFinal],
+        [sequelize.Op.between]: [dateInit, dateFinal],
       },
     },
   }).then(function (count) {
     res.status(200).json({ count });
   });
+});
+
+// SELECT GROSS INCOME BY DATE
+const bruteIncomeByPeriod = asyncWrapper(async (req, res) => {
+  const { dateInit, dateFinal } = req.body;
+
+  const dateI = moment(dateInit).format("YYYY-MM-DD HH:mm:ss");
+  const dateF = moment(dateFinal).format("YYYY-MM-DD HH:mm:ss");
+
+  const grossIncome = await Product.findAll({
+    attributes: [[sequelize.fn("sum", sequelize.col("price")), "grossIncome"]],
+    where: {
+      id: {
+        [sequelize.Op.in]: [
+          sequelize.literal(
+            `SELECT DISTINCT "productId" FROM sells WHERE "createdAt" BETWEEN '${dateI}' AND '${dateF}'`
+          ),
+        ],
+      },
+    },
+  }).catch((err) => console.log(err));
+
+  res.status(200).json({ grossIncome });
 });
 
 // UPDATE Client
@@ -92,4 +116,5 @@ module.exports = {
   deleteSell,
   updateSell,
   countProductByPeriod,
+  bruteIncomeByPeriod,
 };
