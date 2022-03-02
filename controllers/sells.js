@@ -8,7 +8,12 @@ const asyncWrapper = require("../middleware/async");
 
 // GET ALL Sells
 const getAllSells = asyncWrapper(async (req, res) => {
-  const sells = await Sell.findAll();
+  const sells = await Sell.findAll({
+    include: [
+      { association: "product", include: { association: "provider" } },
+      { association: "buyer" },
+    ],
+  });
 
   if (sells.length === 0) {
     return res.status(400).json({ sucess: false, error: "No sells found" });

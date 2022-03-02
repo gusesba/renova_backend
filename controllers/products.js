@@ -1,13 +1,20 @@
 const Product = require("../models/Product");
 const Client = require("../models/Client");
+const sequelize = require("sequelize");
 
 const asyncWrapper = require("../middleware/async");
-const { Model } = require("sequelize/dist");
 
 // GET ALL PRODUCTS
 const getAllProducts = asyncWrapper(async (req, res) => {
   const products = await Product.findAll({
-    include: { association: "provider" },
+    include: [{ association: "provider" }],
+    where: {
+      id: {
+        [sequelize.Op.notIn]: [
+          sequelize.literal(`SELECT DISTINCT "productId" FROM sells`),
+        ],
+      },
+    },
   });
 
   if (products.length === 0) {
