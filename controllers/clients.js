@@ -16,7 +16,9 @@ const getAllClients = async (req, res) => {
 const getClient = asyncWrapper(async (req, res) => {
   const { id } = req.params;
 
-  const client = await Client.findByPk(id);
+  const client = await Client.findByPk(id, {
+    include: [{ association: "product" }],
+  });
 
   if (!client) {
     res.status(400).json({ sucess: false, error: "Client not found" });
