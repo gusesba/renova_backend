@@ -17,7 +17,10 @@ const getClient = asyncWrapper(async (req, res) => {
   const { id } = req.params;
 
   const client = await Client.findByPk(id, {
-    include: [{ association: "product" }],
+    include: [
+      { association: "product", include: [{ association: "sell" }] },
+      { association: "buyer", include: { association: "product" } },
+    ],
   });
 
   if (!client) {
