@@ -1,5 +1,6 @@
 const Client = require("../models/Client");
-
+const Product = require("../models/Product");
+const sequelize = require("sequelize");
 const asyncWrapper = require("../middleware/async");
 
 // GET ALL Clients
@@ -24,19 +25,59 @@ const getClient = asyncWrapper(async (req, res) => {
       },
       {
         association: "buyer",
+
         include: {
           association: "product",
+
           include: [{ association: "provider" }],
         },
       },
     ],
   });
 
+  const income = await Product.findAll({
+    attributes: [[sequelize.fn("sum", sequelize.col("price")), "grossIncome"]],
+    where: {
+      id: {
+        [sequelize.Op.in]: [
+          sequelize.literal(`SELECT DISTINCT "productId" FROM sells`),
+        ],
+      },
+      providerId: {
+        [sequelize.Op.eq]: id,
+      },
+    },
+  });
+
   if (!client) {
     res.status(400).json({ sucess: false, error: "Client not found" });
   }
 
-  res.status(200).json(client);
+  res.status(200).json({ client, income });
+});
+
+const getClientIncome = asyncWrapper(async (req, res) => {
+  const { id } = req.params;
+
+  const income = await Product.findAll({
+    attributes: [[sequelize.fn("sum", sequelize.col("price")), "grossIncome"]],
+    where: {
+      id: {
+        [sequelize.Op.in]: [
+          sequelize.literal(`SELECT DISTINCT "productId" FROM sells`),
+        ],
+      },
+      providerId: {
+        [sequelize.Op.eq]: id,
+      },
+    },
+  });
+
+  if (!income) {
+    res.status(400).json({ sucess: false, error: "Client not found" });
+  }
+
+  res.status(200).json(income);
 });
 
 // CREATE Client
@@ -86,4 +127,5 @@ module.exports = {
   createClient,
   deleteClient,
   updateClient,
+  getClientIncome,
 };

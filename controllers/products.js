@@ -28,7 +28,9 @@ const getAllProducts = asyncWrapper(async (req, res) => {
 const getProduct = asyncWrapper(async (req, res) => {
   const { id } = req.params;
 
-  const product = await Product.findByPk(id);
+  const product = await Product.findByPk(id, {
+    include: [{ association: "provider" }],
+  });
 
   if (!product) {
     return res.status(400).json({ sucess: false, error: "Product not found" });
