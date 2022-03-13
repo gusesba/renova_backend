@@ -49,35 +49,24 @@ const getClient = asyncWrapper(async (req, res) => {
     },
   });
 
-  if (!client) {
-    res.status(400).json({ sucess: false, error: "Client not found" });
-  }
-
-  res.status(200).json({ client, income });
-});
-
-const getClientIncome = asyncWrapper(async (req, res) => {
-  const { id } = req.params;
-
-  const income = await Product.findAll({
+  const boughtValue = await Product.findAll({
     attributes: [[sequelize.fn("sum", sequelize.col("price")), "grossIncome"]],
     where: {
       id: {
         [sequelize.Op.in]: [
-          sequelize.literal(`SELECT DISTINCT "productId" FROM sells`),
+          sequelize.literal(
+            `SELECT DISTINCT "productId" FROM sells WHERE "buyerId" = ${id}`
+          ),
         ],
-      },
-      providerId: {
-        [sequelize.Op.eq]: id,
       },
     },
   });
 
-  if (!income) {
+  if (!client) {
     res.status(400).json({ sucess: false, error: "Client not found" });
   }
 
-  res.status(200).json(income);
+  res.status(200).json({ client, income, boughtValue });
 });
 
 // CREATE Client
@@ -127,5 +116,4 @@ module.exports = {
   createClient,
   deleteClient,
   updateClient,
-  getClientIncome,
 };
