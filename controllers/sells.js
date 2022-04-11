@@ -48,8 +48,8 @@ const createSell = async (req, res) => {
     res.status(400).json({ sucess: false, error: "Product not found" });
   }
 
-  const sell = await Sell.create({ buyerId, productId }).catch((err) =>
-    console.log(err)
+  const sell = await Sell.create({ buyerId, productId, type: "sell" }).catch(
+    (err) => console.log(err)
   );
 
   return res.json(sell);
