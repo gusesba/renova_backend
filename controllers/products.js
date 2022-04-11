@@ -29,7 +29,7 @@ const getProduct = asyncWrapper(async (req, res) => {
   const { id } = req.params;
 
   const product = await Product.findByPk(id, {
-    include: [{ association: "provider" }],
+    include: [{ association: "provider" }, { association: "sell" }],
   });
 
   if (!product) {
