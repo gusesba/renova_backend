@@ -13,12 +13,29 @@ const getAllSells = asyncWrapper(async (req, res) => {
       { association: "product", include: { association: "provider" } },
       { association: "buyer" },
     ],
+    where: { type: "sell" },
   });
 
   if (sells.length === 0) {
     return res.status(400).json({ sucess: false, error: "No sells found" });
   }
   return res.json(sells);
+});
+
+// GET ALL Borrows
+const getAllBorrows = asyncWrapper(async (req, res) => {
+  const borrows = await Sell.findAll({
+    include: [
+      { association: "product", include: { association: "provider" } },
+      { association: "buyer" },
+    ],
+    where: { type: "borrow" },
+  });
+
+  if (borrows.length === 0) {
+    return res.status(400).json({ sucess: false, error: "No borrows found" });
+  }
+  return res.json(borrows);
 });
 
 // GET ONE Sell
@@ -49,10 +66,36 @@ const createSell = async (req, res) => {
   }
 
   const sell = await Sell.create({ buyerId, productId, type: "sell" }).catch(
-    (err) => console.log(err)
+    (err) => {
+      console.log(err);
+      res.json({ error: err.name });
+    }
   );
 
   return res.json(sell);
+};
+
+// CREATE Borrow
+const createBorrow = async (req, res) => {
+  const { buyerId, productId } = req.body;
+
+  const buyer = await Client.findByPk(buyerId);
+  const product = await Product.findByPk(productId);
+
+  if (!buyer) {
+    res.status(400).json({ sucess: false, error: "Buyer not found" });
+  }
+  if (!product) {
+    res.status(400).json({ sucess: false, error: "Product not found" });
+  }
+
+  const borrow = await Sell.create({
+    buyerId,
+    productId,
+    type: "borrow",
+  }).catch((err) => console.log(err));
+
+  return res.json(borrow);
 };
 
 // DELETE Sell
@@ -122,4 +165,6 @@ module.exports = {
   updateSell,
   countProductByPeriod,
   bruteIncomeByPeriod,
+  createBorrow,
+  getAllBorrows,
 };

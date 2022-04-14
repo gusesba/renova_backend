@@ -26,6 +26,7 @@ module.exports = {
         references: { model: "products", key: "id" },
         onUpdate: "CASCADE",
         onDelete: "RESTRICT",
+        unique: true,
       },
       createdAt: {
         type: Sequelize.DATE,
