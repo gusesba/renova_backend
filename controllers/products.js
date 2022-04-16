@@ -46,7 +46,7 @@ const createProduct = async (req, res) => {
   const provider = await Client.findByPk(providerId);
 
   if (!provider) {
-    return res.status(400).json({ error: "User not found" });
+    return res.status(200).json({ error: "User not found" });
   }
 
   const product = await Product.create({

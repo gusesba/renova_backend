@@ -86,15 +86,19 @@ const deleteClient = asyncWrapper(async (req, res) => {
 
   await Client.destroy({
     where: { id },
-  }).then((count) => {
-    if (!count) {
-      return res.status(400).json({
-        sucess: false,
-        error: "Client not found",
-      });
-    }
-    res.status(200).json({ sucess: true });
-  });
+  })
+    .then((count) => {
+      if (!count) {
+        return res.json({
+          sucess: false,
+          error: "Client not found",
+        });
+      }
+      res.status(200).json({ sucess: true });
+    })
+    .catch((err) => {
+      res.json({ error: err.name });
+    });
 });
 
 // UPDATE Client

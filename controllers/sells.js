@@ -59,19 +59,18 @@ const createSell = async (req, res) => {
   const product = await Product.findByPk(productId);
 
   if (!buyer) {
-    res.status(400).json({ sucess: false, error: "Buyer not found" });
+    return res.json({ sucess: false, error: "Buyer not found" });
   }
   if (!product) {
-    res.status(400).json({ sucess: false, error: "Product not found" });
+    return res.json({ sucess: false, error: "Product not found" });
   }
 
   const sell = await Sell.create({ buyerId, productId, type: "sell" }).catch(
     (err) => {
-      console.log(err);
       res.json({ error: err.name });
     }
   );
-
+  console.log("teste-----------------------------------------");
   return res.json(sell);
 };
 
