@@ -29,7 +29,7 @@ const getClient = asyncWrapper(async (req, res) => {
         include: {
           association: "product",
 
-          include: [{ association: "provider" }],
+          include: [{ association: "sell" }, { association: "provider" }],
         },
       },
     ],

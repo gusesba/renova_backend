@@ -36,6 +36,10 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
+      sellPrice: {
+        type: Sequelize.DOUBLE,
+        allowNull: false,
+      },
     });
   },
 

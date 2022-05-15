@@ -53,7 +53,7 @@ const getSell = asyncWrapper(async (req, res) => {
 
 // CREATE Sell
 const createSell = async (req, res) => {
-  const { buyerId, productId } = req.body;
+  const { buyerId, productId, sellPrice } = req.body;
 
   const buyer = await Client.findByPk(buyerId);
   const product = await Product.findByPk(productId);
@@ -65,12 +65,16 @@ const createSell = async (req, res) => {
     return res.json({ sucess: false, error: "Product not found" });
   }
 
-  const sell = await Sell.create({ buyerId, productId, type: "sell" }).catch(
-    (err) => {
-      res.json({ error: err.name });
-    }
-  );
-  console.log("teste-----------------------------------------");
+  console.log(sellPrice);
+  const sell = await Sell.create({
+    buyerId,
+    productId,
+    sellPrice,
+    type: "sell",
+  }).catch((err) => {
+    res.json({ error: err.name });
+  });
+
   return res.json(sell);
 };
 
@@ -91,6 +95,7 @@ const createBorrow = async (req, res) => {
   const borrow = await Sell.create({
     buyerId,
     productId,
+    sellPrice: 0,
     type: "borrow",
   }).catch((err) => console.log(err));
 
