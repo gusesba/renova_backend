@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
     "express": "^4.17.2",
     "moment": "^2.29.1",
     "pg": "^8.7.1",
@@ -16,7 +17,8 @@
   },
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "migrate": "npx sequelize-cli db:migrate"
   },
   "author": "",
   "license": "ISC"
