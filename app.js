@@ -5,6 +5,7 @@ const clients = require("./routes/clients");
 const products = require("./routes/products");
 const sells = require("./routes/sells");
 const notFound = require("./middleware/not-found");
+const port = process.env.PORT || 5000;
 
 require("./db/index");
 
@@ -17,4 +18,4 @@ app.use("/api/v1/sells", sells);
 
 app.use(notFound);
 
-app.listen(5000, () => console.log(`Server is listening on port 5000...`));
+app.listen(port, () => console.log(`Server is listening on port ${port}...`));
