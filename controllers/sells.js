@@ -40,7 +40,7 @@ const getAllBorrows = asyncWrapper(async (req, res) => {
 
 // Get all donations
 const getAllDonations = asyncWrapper(async (req, res) => {
-  const borrows = await Sell.findAll({
+  const donations = await Sell.findAll({
     include: [
       { association: "product", include: { association: "provider" } },
       { association: "buyer" },
@@ -48,10 +48,28 @@ const getAllDonations = asyncWrapper(async (req, res) => {
     where: { type: "donation" },
   });
 
-  if (borrows.length === 0) {
+  if (donations.length === 0) {
     return res.status(400).json({ sucess: false, error: "No donations found" });
   }
-  return res.json(borrows);
+  return res.json(donations);
+});
+
+// Get all devolutions
+const getAllDevolutions = asyncWrapper(async (req, res) => {
+  const devolutions = await Sell.findAll({
+    include: [
+      { association: "product", include: { association: "provider" } },
+      { association: "buyer" },
+    ],
+    where: { type: "devolution" },
+  });
+
+  if (devolutions.length === 0) {
+    return res
+      .status(400)
+      .json({ sucess: false, error: "No devolution found" });
+  }
+  return res.json(devolutions);
 });
 
 // GET ONE Sell
@@ -143,6 +161,31 @@ const createDonation = async (req, res) => {
   return res.json(donation);
 };
 
+// Create Donation
+
+const createDevolution = async (req, res) => {
+  const { buyerId, productId } = req.body;
+
+  const buyer = await Client.findByPk(buyerId);
+  const product = await Product.findByPk(productId);
+
+  if (!buyer) {
+    res.status(400).json({ sucess: false, error: "Buyer not found" });
+  }
+  if (!product) {
+    res.status(400).json({ sucess: false, error: "Product not found" });
+  }
+
+  const devolution = await Sell.create({
+    buyerId,
+    productId,
+    sellPrice: 0,
+    type: "devolution",
+  }).catch((err) => console.log(err));
+
+  return res.json(devolution);
+};
+
 // DELETE Sell
 const deleteSell = asyncWrapper(async (req, res) => {
   const { id } = req.params;
@@ -214,4 +257,6 @@ module.exports = {
   getAllBorrows,
   createDonation,
   getAllDonations,
+  createDevolution,
+  getAllDevolutions,
 };
