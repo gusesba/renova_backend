@@ -38,6 +38,22 @@ const getAllBorrows = asyncWrapper(async (req, res) => {
   return res.json(borrows);
 });
 
+// Get all donations
+const getAllDonations = asyncWrapper(async (req, res) => {
+  const borrows = await Sell.findAll({
+    include: [
+      { association: "product", include: { association: "provider" } },
+      { association: "buyer" },
+    ],
+    where: { type: "donation" },
+  });
+
+  if (borrows.length === 0) {
+    return res.status(400).json({ sucess: false, error: "No donations found" });
+  }
+  return res.json(borrows);
+});
+
 // GET ONE Sell
 const getSell = asyncWrapper(async (req, res) => {
   const { id } = req.params;
@@ -100,6 +116,31 @@ const createBorrow = async (req, res) => {
   }).catch((err) => console.log(err));
 
   return res.json(borrow);
+};
+
+// Create Donation
+
+const createDonation = async (req, res) => {
+  const { buyerId, productId } = req.body;
+
+  const buyer = await Client.findByPk(buyerId);
+  const product = await Product.findByPk(productId);
+
+  if (!buyer) {
+    res.status(400).json({ sucess: false, error: "Buyer not found" });
+  }
+  if (!product) {
+    res.status(400).json({ sucess: false, error: "Product not found" });
+  }
+
+  const donation = await Sell.create({
+    buyerId,
+    productId,
+    sellPrice: 0,
+    type: "donation",
+  }).catch((err) => console.log(err));
+
+  return res.json(donation);
 };
 
 // DELETE Sell
@@ -171,4 +212,6 @@ module.exports = {
   bruteIncomeByPeriod,
   createBorrow,
   getAllBorrows,
+  createDonation,
+  getAllDonations,
 };
