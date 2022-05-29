@@ -219,27 +219,28 @@ const countProductByPeriod = asyncWrapper(async (req, res) => {
   });
 });
 
-// SELECT GROSS INCOME BY DATE
-const bruteIncomeByPeriod = asyncWrapper(async (req, res) => {
+// SELECT how much a client buy
+const clientBuyIncome = asyncWrapper(async (req, res) => {
   const { dateInit, dateFinal } = req.body;
+  const { id } = req.params;
 
   const dateI = moment(dateInit).format("YYYY-MM-DD HH:mm:ss");
   const dateF = moment(dateFinal).format("YYYY-MM-DD HH:mm:ss");
 
-  const grossIncome = await Product.findAll({
-    attributes: [[sequelize.fn("sum", sequelize.col("price")), "grossIncome"]],
+  const buyIncome = await Product.findAll({
+    attributes: [[sequelize.fn("sum", sequelize.col("price")), "buyIncome"]],
     where: {
       id: {
         [sequelize.Op.in]: [
           sequelize.literal(
-            `SELECT DISTINCT "productId" FROM sells WHERE "createdAt" BETWEEN '${dateI}' AND '${dateF}'`
+            `SELECT DISTINCT "productId" FROM sells WHERE "buyerId" = ${id} AND ( "createdAt" BETWEEN '${dateI}' AND '${dateF}')`
           ),
         ],
       },
     },
   }).catch((err) => console.log(err));
 
-  res.status(200).json({ grossIncome });
+  res.status(200).json({ buyIncome });
 });
 
 // UPDATE Client
@@ -252,11 +253,11 @@ module.exports = {
   deleteSell,
   updateSell,
   countProductByPeriod,
-  bruteIncomeByPeriod,
   createBorrow,
   getAllBorrows,
   createDonation,
   getAllDonations,
   createDevolution,
   getAllDevolutions,
+  clientBuyIncome,
 };
