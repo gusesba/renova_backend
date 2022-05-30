@@ -13,8 +13,7 @@ const {
   getAllDonations,
   getAllDevolutions,
   createDevolution,
-  clientBuyIncome,
-  clientSellIncome,
+  clientIncome,
 } = require("../controllers/sells");
 
 router.route("/").get(getAllSells).post(createSell);
@@ -22,7 +21,6 @@ router.route("/borrows").get(getAllBorrows).post(createBorrow);
 router.route("/donations").get(getAllDonations).post(createDonation);
 router.route("/devolutions").get(getAllDevolutions).post(createDevolution);
 router.route("/:id").get(getSell).patch(updateSell).delete(deleteSell);
-router.route("/:id/buyIncome").get(clientBuyIncome);
-router.route("/:id/sellIncome").get(clientSellIncome);
+router.route("/:id/income").post(clientIncome);
 
 module.exports = router;

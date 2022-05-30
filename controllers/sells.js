@@ -219,32 +219,8 @@ const countProductByPeriod = asyncWrapper(async (req, res) => {
   });
 });
 
-// SELECT how much a client bought
-const clientBuyIncome = asyncWrapper(async (req, res) => {
-  const { dateInit, dateFinal } = req.body;
-  const { id } = req.params;
-
-  const dateI = moment(dateInit).format("YYYY-MM-DD HH:mm:ss");
-  const dateF = moment(dateFinal).format("YYYY-MM-DD HH:mm:ss");
-
-  const buyIncome = await Product.findAll({
-    attributes: [[sequelize.fn("sum", sequelize.col("price")), "buyIncome"]],
-    where: {
-      id: {
-        [sequelize.Op.in]: [
-          sequelize.literal(
-            `SELECT DISTINCT "productId" FROM sells WHERE "buyerId" = ${id} AND ( "createdAt" BETWEEN '${dateI}' AND '${dateF}')`
-          ),
-        ],
-      },
-    },
-  }).catch((err) => console.log(err));
-
-  res.status(200).json({ buyIncome });
-});
-
 // SELECT how much a client sold
-const clientSellIncome = asyncWrapper(async (req, res) => {
+const clientIncome = asyncWrapper(async (req, res) => {
   const { dateInit, dateFinal } = req.body;
   const { id } = req.params;
 
@@ -264,7 +240,20 @@ const clientSellIncome = asyncWrapper(async (req, res) => {
     },
   }).catch((err) => console.log(err));
 
-  res.status(200).json({ sellIncome });
+  const buyIncome = await Product.findAll({
+    attributes: [[sequelize.fn("sum", sequelize.col("price")), "buyIncome"]],
+    where: {
+      id: {
+        [sequelize.Op.in]: [
+          sequelize.literal(
+            `SELECT DISTINCT "productId" FROM sells WHERE "buyerId" = ${id} AND ( "createdAt" BETWEEN '${dateI}' AND '${dateF}')`
+          ),
+        ],
+      },
+    },
+  }).catch((err) => console.log(err));
+
+  res.status(200).json({ sellIncome, buyIncome });
 });
 
 // UPDATE Client
@@ -283,6 +272,5 @@ module.exports = {
   getAllDonations,
   createDevolution,
   getAllDevolutions,
-  clientBuyIncome,
-  clientSellIncome,
+  clientIncome,
 };
