@@ -15,6 +15,7 @@ const getAllProducts = asyncWrapper(async (req, res) => {
         ],
       },
     },
+    order: [["id", "ASC"]],
   });
 
   if (products.length === 0) {

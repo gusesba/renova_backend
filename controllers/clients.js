@@ -5,7 +5,7 @@ const asyncWrapper = require("../middleware/async");
 
 // GET ALL Clients
 const getAllClients = async (req, res) => {
-  const clients = await Client.findAll();
+  const clients = await Client.findAll({ order: [["id", "ASC"]] });
 
   if (clients.length === 0) {
     return res.status(400).json({ sucess: false, error: "No clients found" });

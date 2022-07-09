@@ -14,6 +14,7 @@ const getAllSells = asyncWrapper(async (req, res) => {
       { association: "buyer" },
     ],
     where: { type: "sell" },
+    order: [["product", "id", "ASC"]],
   });
 
   if (sells.length === 0) {
@@ -30,6 +31,7 @@ const getAllBorrows = asyncWrapper(async (req, res) => {
       { association: "buyer" },
     ],
     where: { type: "borrow" },
+    order: [["product", "id", "ASC"]],
   });
 
   if (borrows.length === 0) {
@@ -46,6 +48,7 @@ const getAllDonations = asyncWrapper(async (req, res) => {
       { association: "buyer" },
     ],
     where: { type: "donation" },
+    order: [["product", "id", "ASC"]],
   });
 
   if (donations.length === 0) {
@@ -62,6 +65,7 @@ const getAllDevolutions = asyncWrapper(async (req, res) => {
       { association: "buyer" },
     ],
     where: { type: "devolution" },
+    order: [["product", "id", "ASC"]],
   });
 
   if (devolutions.length === 0) {
