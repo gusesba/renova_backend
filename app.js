@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+app.use(cors());
 const clients = require("./routes/clients");
 const products = require("./routes/products");
 const sells = require("./routes/sells");
@@ -10,7 +11,6 @@ const port = process.env.PORT || 5000;
 require("./db/index");
 
 app.use(express.json());
-app.use(cors());
 
 app.use("/api/v1/clients", clients);
 app.use("/api/v1/products", products);
