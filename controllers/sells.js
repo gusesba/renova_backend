@@ -91,7 +91,7 @@ const getSell = asyncWrapper(async (req, res) => {
 
 // CREATE Sell
 const createSell = async (req, res) => {
-  const { buyerId, productId, sellPrice } = req.body;
+  let { buyerId, productId, sellPrice } = req.body;
 
   const buyer = await Client.findByPk(buyerId);
   const product = await Product.findByPk(productId);
@@ -102,8 +102,9 @@ const createSell = async (req, res) => {
   if (!product) {
     return res.json({ sucess: false, error: "Product not found" });
   }
-
-  console.log(sellPrice);
+  if (sellPrice === "-") {
+    sellPrice = product.price;
+  }
   const sell = await Sell.create({
     buyerId,
     productId,
