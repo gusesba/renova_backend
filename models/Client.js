@@ -5,6 +5,7 @@ class Client extends Model {
     super.init(
       {
         name: DataTypes.STRING,
+        number: DataTypes.INTEGER,
         phone: DataTypes.STRING,
       },
       {

@@ -5,6 +5,7 @@ class Product extends Model {
     super.init(
       {
         price: DataTypes.DOUBLE,
+        number: DataTypes.INTEGER,
         type: DataTypes.STRING,
         brand: DataTypes.STRING,
         size: DataTypes.STRING,

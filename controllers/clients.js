@@ -71,9 +71,9 @@ const getClient = asyncWrapper(async (req, res) => {
 
 // CREATE Client
 const createClient = async (req, res) => {
-  const { name, phone } = req.body;
+  const { name, phone, number } = req.body;
 
-  const client = await Client.create({ name, phone }).catch((err) =>
+  const client = await Client.create({ name, phone, number }).catch((err) =>
     console.log(err)
   );
 
@@ -104,14 +104,16 @@ const deleteClient = asyncWrapper(async (req, res) => {
 // UPDATE Client
 const updateClient = asyncWrapper(async (req, res) => {
   const { id } = req.params;
-  const { phone, name } = req.body;
+  const { phone, name, number } = req.body;
 
-  await Client.update({ phone, name }, { where: { id } }).then((result) => {
-    if (!result[0]) {
-      res.status(400).json({ sucess: false, error: "Client not found" });
+  await Client.update({ phone, name, number }, { where: { id } }).then(
+    (result) => {
+      if (!result[0]) {
+        res.status(400).json({ sucess: false, error: "Client not found" });
+      }
+      res.status(200).json({ sucess: true });
     }
-    res.status(200).json({ sucess: true });
-  });
+  );
 });
 
 module.exports = {

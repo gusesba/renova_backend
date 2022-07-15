@@ -42,7 +42,8 @@ const getProduct = asyncWrapper(async (req, res) => {
 
 // CREATE PRODUCT
 const createProduct = async (req, res) => {
-  const { providerId, price, type, brand, size, description, color } = req.body;
+  const { providerId, price, type, brand, size, description, color, number } =
+    req.body;
 
   const provider = await Client.findByPk(providerId);
 
@@ -58,6 +59,7 @@ const createProduct = async (req, res) => {
     description,
     color,
     providerId,
+    number,
   });
 
   return res.json(product);
@@ -83,10 +85,11 @@ const deleteProduct = asyncWrapper(async (req, res) => {
 // UPDATE PRODUCT
 const updateProduct = asyncWrapper(async (req, res) => {
   const { id } = req.params;
-  const { price, type, brand, size, description, color } = req.body;
+  const { price, type, brand, size, description, color, number, providerId } =
+    req.body;
 
   await Product.update(
-    { price, type, brand, size, description, color },
+    { price, type, brand, size, description, color, number, providerId },
     { where: { id } }
   ).then((result) => {
     if (!result[0]) {
