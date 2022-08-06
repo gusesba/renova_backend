@@ -232,31 +232,37 @@ const clientIncome = asyncWrapper(async (req, res) => {
   const dateI = moment(dateInit).format("YYYY-MM-DD HH:mm:ss");
   const dateF = moment(dateFinal).format("YYYY-MM-DD HH:mm:ss");
 
-  const sellIncome = await Product.findAll({
-    attributes: [[sequelize.fn("sum", sequelize.col("price")), "sellIncome"]],
+  const sellIncome = await Sell.findAll({
+    attributes: [
+      [sequelize.fn("sum", sequelize.col("sellPrice")), "sellIncome"],
+    ],
     where: {
-      id: {
-        [sequelize.Op.in]: [
-          sequelize.literal(
-            `SELECT DISTINCT "sells"."productId" FROM sells WHERE ( "sells"."createdAt" BETWEEN '${dateI}' AND '${dateF}') AND "sells"."productId" IN (SELECT DISTINCT "products"."id" from products LEFT OUTER JOIN "clients" AS "provider" ON "products"."providerId" = "provider"."id" WHERE "provider"."id" = ${id})`
-          ),
-        ],
-      },
+      [sequelize.Op.and]: [
+        { createdAt: { [sequelize.Op.between]: [dateI, dateF] } },
+        {
+          productId: {
+            [sequelize.Op.in]: [
+              sequelize.literal(
+                `SELECT DISTINCT "products"."id" from products WHERE "products"."providerId" = ${id}`
+              ),
+            ],
+          },
+        },
+      ],
     },
-  }).catch((err) => console.log(err));
+  });
 
-  const buyIncome = await Product.findAll({
-    attributes: [[sequelize.fn("sum", sequelize.col("price")), "buyIncome"]],
+  const buyIncome = await Sell.findAll({
+    attributes: [
+      [sequelize.fn("sum", sequelize.col("sellPrice")), "buyIncome"],
+    ],
     where: {
-      id: {
-        [sequelize.Op.in]: [
-          sequelize.literal(
-            `SELECT DISTINCT "productId" FROM sells WHERE "buyerId" = ${id} AND ( "createdAt" BETWEEN '${dateI}' AND '${dateF}')`
-          ),
-        ],
-      },
+      [sequelize.Op.and]: [
+        { createdAt: { [sequelize.Op.between]: [dateI, dateF] } },
+        { buyerId: id },
+      ],
     },
-  }).catch((err) => console.log(err));
+  });
 
   res.status(200).json({ sellIncome, buyIncome });
 });

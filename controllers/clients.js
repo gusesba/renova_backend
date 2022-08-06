@@ -2,6 +2,7 @@ const Client = require("../models/Client");
 const Product = require("../models/Product");
 const sequelize = require("sequelize");
 const asyncWrapper = require("../middleware/async");
+const moment = require("moment");
 
 // GET ALL Clients
 const getAllClients = async (req, res) => {
@@ -35,38 +36,11 @@ const getClient = asyncWrapper(async (req, res) => {
     ],
   });
 
-  const income = await Product.findAll({
-    attributes: [[sequelize.fn("sum", sequelize.col("price")), "grossIncome"]],
-    where: {
-      id: {
-        [sequelize.Op.in]: [
-          sequelize.literal(`SELECT DISTINCT "productId" FROM sells`),
-        ],
-      },
-      providerId: {
-        [sequelize.Op.eq]: id,
-      },
-    },
-  });
-
-  const boughtValue = await Product.findAll({
-    attributes: [[sequelize.fn("sum", sequelize.col("price")), "grossIncome"]],
-    where: {
-      id: {
-        [sequelize.Op.in]: [
-          sequelize.literal(
-            `SELECT DISTINCT "productId" FROM sells WHERE "buyerId" = ${id}`
-          ),
-        ],
-      },
-    },
-  });
-
   if (!client) {
-    res.status(400).json({ sucess: false, error: "Client not found" });
+    return res.status(400).json({ sucess: false, error: "Client not found" });
   }
 
-  res.status(200).json({ client, income, boughtValue });
+  return res.status(200).json({ client });
 });
 
 // CREATE Client
@@ -94,7 +68,7 @@ const deleteClient = asyncWrapper(async (req, res) => {
           error: "Client not found",
         });
       }
-      res.status(200).json({ sucess: true });
+      return res.status(200).json({ sucess: true });
     })
     .catch((err) => {
       res.json({ error: err.name });
@@ -109,9 +83,11 @@ const updateClient = asyncWrapper(async (req, res) => {
   await Client.update({ phone, name, number }, { where: { id } }).then(
     (result) => {
       if (!result[0]) {
-        res.status(400).json({ sucess: false, error: "Client not found" });
+        return res
+          .status(400)
+          .json({ sucess: false, error: "Client not found" });
       }
-      res.status(200).json({ sucess: true });
+      return res.status(200).json({ sucess: true });
     }
   );
 });

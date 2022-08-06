@@ -10,7 +10,7 @@ module.exports = {
         allowNull: false,
       },
       number: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       name: {

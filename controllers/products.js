@@ -85,11 +85,30 @@ const deleteProduct = asyncWrapper(async (req, res) => {
 // UPDATE PRODUCT
 const updateProduct = asyncWrapper(async (req, res) => {
   const { id } = req.params;
-  const { price, type, brand, size, description, color, number, providerId } =
-    req.body;
+  const {
+    price,
+    type,
+    brand,
+    size,
+    description,
+    color,
+    number,
+    providerId,
+    createdAt,
+  } = req.body;
 
   await Product.update(
-    { price, type, brand, size, description, color, number, providerId },
+    {
+      price,
+      type,
+      brand,
+      size,
+      description,
+      color,
+      number,
+      providerId,
+      createdAt,
+    },
     { where: { id } }
   ).then((result) => {
     if (!result[0]) {
